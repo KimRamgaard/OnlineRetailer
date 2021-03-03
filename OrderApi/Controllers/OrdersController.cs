@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using OrderApi.Data;
 using OrderApi.Models;
-using RestSharp;
 
 namespace OrderApi.Controllers
 {
@@ -11,31 +9,37 @@ namespace OrderApi.Controllers
     [Route("[controller]")]
     public class OrdersController : ControllerBase
     {
-        private readonly IRepository<Order> repository;
+        //private readonly IRepository<Order> _repository;
 
-        public OrdersController(IRepository<Order> repos)
+        private readonly OrderApiContext _context;
+
+        public OrdersController(OrderApiContext context)
         {
-            repository = repos;
+            _context = context;
         }
 
         // GET: orders
         [HttpGet]
-        public IEnumerable<Order> Get()
+        public IEnumerable<Order> GetAllOrders()
         {
-            return repository.GetAll();
+            //return _repository.GetAll(); 
         }
 
+        /*
         // GET orders/5
         [HttpGet("{id}", Name = "GetOrder")]
         public IActionResult Get(int id)
         {
-            var item = repository.Get(id);
+            var item = orderRepo.Get(id);
             if (item == null)
             {
                 return NotFound();
             }
             return new ObjectResult(item);
         }
+        */
+
+        /*
 
         // POST orders
         [HttpPost]
@@ -74,6 +78,7 @@ namespace OrderApi.Controllers
             // If the order could not be created, "return no content".
             return NoContent();
         }
+        */
 
     }
 }

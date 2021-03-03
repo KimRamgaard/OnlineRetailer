@@ -19,12 +19,20 @@ namespace OrderApi.Data
                 return;   // DB has been seeded
             }
 
-            List<Order> orders = new List<Order>
+            Order order = new Order()
             {
-                new Order { Date = DateTime.Today, ProductId = 1, Quantity = 2 }
+                Id = 1,
+                CustomerId = 1,
+                Date = DateTime.Today,
+                Products = new List<Product>
+                {
+                    new Product(){Id = 1, ItemsReserved = 2},
+                    new Product(){Id = 2, ItemsReserved = 3}
+                }
+
             };
 
-            context.Orders.AddRange(orders);
+            context.Orders.Add(order);
             context.SaveChanges();
         }
     }
