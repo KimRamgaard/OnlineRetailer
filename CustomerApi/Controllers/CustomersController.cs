@@ -5,6 +5,8 @@ using CustomerApi.Models;
 
 namespace CustomerApi.Controllers
 {
+    [ApiController]
+    [Route("[controller]")]
     public class CustomersController : ControllerBase
     {
 
