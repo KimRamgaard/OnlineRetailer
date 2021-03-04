@@ -65,7 +65,7 @@ namespace OrderApi.Controllers
             
 
             // Ask Product service if products are available
-            c.BaseUrl = new Uri("https://localhost:5001/products/");
+            c.BaseUrl = new Uri("http://localhost:5001/products");
             var ProductRequest = new RestRequest(Method.PUT).AddJsonBody(order.Products);
             var ProductResponse = c.Execute(ProductRequest);
             if (ProductResponse.IsSuccessful)
@@ -73,9 +73,13 @@ namespace OrderApi.Controllers
                 var newOrder = _repository.Add(order);
                 return CreatedAtRoute("GetOrder", new { id = newOrder.Id }, newOrder);
             }
+            else
+            {
+                // If the order could not be created, "return no content".
+                return BadRequest(ProductResponse.ErrorMessage);
+            }
 
-            // If the order could not be created, "return no content".
-            return BadRequest();
+            
         }
         
 

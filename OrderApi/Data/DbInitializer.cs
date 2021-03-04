@@ -24,10 +24,10 @@ namespace OrderApi.Data
                 Id = 1,
                 CustomerId = 1,
                 Date = DateTime.Today,
-                Products = new List<Product>
+                Products = new List<ProductOrder>
                 {
-                    new Product(){Id = 1, ItemsReserved = 2},
-                    new Product(){Id = 2, ItemsReserved = 3}
+                    new ProductOrder(){Id = 1, ItemsReserved = 2},
+                    new ProductOrder(){Id = 2, ItemsReserved = 3}
                 }
 
             };

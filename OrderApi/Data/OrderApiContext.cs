@@ -12,12 +12,12 @@ namespace OrderApi.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Order>().HasKey(o => o.Id);
-            modelBuilder.Entity<Product>().HasKey(p => p.Id);
-            modelBuilder.Entity<Order>().HasMany<Product>(o => o.Products).WithOne(p => p.Order).IsRequired();
+            modelBuilder.Entity<ProductOrder>().HasKey(p => p.Id);
+            modelBuilder.Entity<Order>().HasMany<ProductOrder>(o => o.Products).WithOne(p => p.Order).IsRequired();
         }
         
 
         public DbSet<Order> Orders { get; set; }
-        public DbSet<Product> Products { get; set; }
+        public DbSet<ProductOrder> Products { get; set; }
     }
 }

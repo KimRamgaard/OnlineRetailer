@@ -21,7 +21,7 @@ namespace OrderApi.Data
                 entity.Date = DateTime.Now;
             
             var newOrder = db.Orders.Add(entity).Entity;
-            db.SaveChanges();
+            //db.SaveChanges();
             return newOrder;
         }
 

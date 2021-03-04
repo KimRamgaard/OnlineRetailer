@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace OrderApi.Models
 {
-    public class Product
+    public class ProductOrder
     {
         public int Id { get; set; }
         public int ItemsReserved { get; set; }

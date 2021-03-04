@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Text.Json;
 using Microsoft.AspNetCore.Mvc;
 using ProductApi.Data;
 using ProductApi.Models;
@@ -50,28 +52,40 @@ namespace ProductApi.Controllers
         }
 
         // PUT products/5
-        [HttpPut("{id}")]
-        public IActionResult Put(int id, [FromBody]Product product)
+        [HttpPut]
+
+        public IActionResult PutProduct(List<ProductOrder> productOrders)
         {
-            if (product == null || product.Id != id)
+            List<Product> products = new List<Product>();
+            
+            //iterate through products and check if stock is present
+            foreach (ProductOrder productOrder in productOrders)
             {
-                return BadRequest();
+                Product product = repository.Get(productOrder.Id);
+                if (product is null)
+                {
+                    return BadRequest();
+                }
+
+                if(product.ItemsInStock < productOrder.ItemsReserved)
+                {
+                    return BadRequest(); //not enough items in stock
+                }
+               
+                //minus stock and save to apply later
+                product.ItemsInStock -= productOrder.ItemsReserved;
+                products.Add(product);
+
             }
 
-            var modifiedProduct = repository.Get(id);
-
-            if (modifiedProduct == null)
+            //Commit to database
+            foreach (Product p in products)
             {
-                return NotFound();
+                repository.Edit(p);
             }
 
-            modifiedProduct.Name = product.Name;
-            modifiedProduct.Price = product.Price;
-            modifiedProduct.ItemsInStock = product.ItemsInStock;
-            modifiedProduct.ItemsReserved = product.ItemsReserved;
+            return Ok(products);
 
-            repository.Edit(modifiedProduct);
-            return new NoContentResult();
         }
 
         // DELETE products/5

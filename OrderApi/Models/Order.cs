@@ -11,7 +11,7 @@ namespace OrderApi.Models
         public int CustomerId { get; set; }
 
         //Products
-        public ICollection<Product> Products { get; set; }
+        public ICollection<ProductOrder> Products { get; set; }
 
         
 
