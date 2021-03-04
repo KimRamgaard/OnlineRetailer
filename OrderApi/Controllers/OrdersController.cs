@@ -55,13 +55,14 @@ namespace OrderApi.Controllers
             RestClient c = new RestClient();
 
             // Ask Customer service if Customer is valid
-            c.BaseUrl = new Uri("https://localhost:5002/customers/");
+            c.BaseUrl = new Uri("http://localhost:5002/customers/");
             var customerRequest = new RestRequest(order.CustomerId.ToString(), Method.GET);
             var customerResponse = c.Execute(customerRequest);
             if (!customerResponse.IsSuccessful)
             {
-                return BadRequest("Customer does not exist");
+                return BadRequest(customerResponse.ErrorMessage);
             }
+            
 
             // Ask Product service if products are available
             c.BaseUrl = new Uri("https://localhost:5001/products/");
@@ -74,7 +75,7 @@ namespace OrderApi.Controllers
             }
 
             // If the order could not be created, "return no content".
-            return NoContent();
+            return BadRequest();
         }
         
 
