@@ -9,35 +9,34 @@ namespace OrderApi.Controllers
     [Route("[controller]")]
     public class OrdersController : ControllerBase
     {
-        //private readonly IRepository<Order> _repository;
+        private readonly IRepository<Order> _repository;
 
-        private readonly OrderApiContext _context;
+        //private readonly OrderApiContext _context;
 
-        public OrdersController(OrderApiContext context)
+        public OrdersController(IRepository<Order> repository)
         {
-            _context = context;
+            _repository = repository;
         }
 
         // GET: orders
         [HttpGet]
         public IEnumerable<Order> GetAllOrders()
         {
-            //return _repository.GetAll(); 
-        }
+            return _repository.GetAll();
+         }
 
-        /*
+
         // GET orders/5
         [HttpGet("{id}", Name = "GetOrder")]
         public IActionResult Get(int id)
         {
-            var item = orderRepo.Get(id);
+            var item = _repository.Get(id);
             if (item == null)
             {
                 return NotFound();
             }
             return new ObjectResult(item);
         }
-        */
 
         /*
 
