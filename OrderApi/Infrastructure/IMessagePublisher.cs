@@ -1,11 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using SharedModels;
 
 namespace OrderApi.Infrastructure
 {
-    public class IMessagePublisher
+    public interface IMessagePublisher
     {
+        void PublishOrderStatusChangedMessage(int customerId, IEnumerable<Order.OrderLine> orderLines, string topic);
+
+        bool IsInStock(Order order);
     }
 }
