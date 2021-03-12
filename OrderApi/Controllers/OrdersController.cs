@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
 using OrderApi.Data;
-using OrderApi.Models;
+using SharedModels;
 using RestSharp;
+using OrderApi.Infrastructure;
 
 namespace OrderApi.Controllers
 {
@@ -13,12 +14,18 @@ namespace OrderApi.Controllers
     public class OrdersController : ControllerBase
     {
         private readonly IRepository<Order> _repository;
+        IServiceGateway<Product> productServiceGateway;
+        IMessagePublisher messagePublisher;
 
         //private readonly OrderApiContext _context;
 
-        public OrdersController(IRepository<Order> repository)
+        public OrdersController(IRepository<Order> repository,
+            IServiceGateway<Product> gateway,
+            IMessagePublisher publisher)
         {
             _repository = repository;
+            productServiceGateway = gateway;
+            messagePublisher = publisher;
         }
 
         // GET: orders
@@ -56,8 +63,8 @@ namespace OrderApi.Controllers
 
             // Ask Customer service if Customer is valid
             // *** Pierre TODO *** 
-            c.BaseUrl = new Uri("customers/" + order.CustomerId);
-            var customerRequest = new RestRequest(order.CustomerId.ToString(), Method.GET);
+            c.BaseUrl = new Uri("customers/" + order.customerId);
+            var customerRequest = new RestRequest(order.customerId.ToString(), Method.GET);
             var customerResponse = c.Execute(customerRequest);
             if (customerResponse.IsSuccessful)
             {
@@ -78,24 +85,46 @@ namespace OrderApi.Controllers
 
 
             // Ask Product service if products are available
-            // *** JAKOB TODO ***
-            c.BaseUrl = new Uri("products");
-            var ProductRequest = new RestRequest(Method.PUT).AddJsonBody(order.Products);
-            var ProductResponse = c.Execute(ProductRequest);
-            if (ProductResponse.IsSuccessful)
+            if (ProductItemsAvailable(order))
             {
-                var newOrder = _repository.Add(order);
-                return CreatedAtRoute("GetOrder", new { id = newOrder.Id }, newOrder);
+                try
+                {
+                    // Publish OrderStatusChangedMessage. If this operation
+                    // fails, the order will not be created
+                    messagePublisher.PublishOrderStatusChangedMessage(
+                        order.customerId, order.OrderLines, "completed");
+
+                    // Create order.
+                    order.Status = Order.OrderStatus.completed;
+                    var newOrder = _repository.Add(order);
+                    return CreatedAtRoute("GetOrder", new { id = newOrder.Id }, newOrder);
+                }
+                catch
+                {
+                    return StatusCode(500, "An error happened. Try again.");
+                }
             }
             else
             {
-                // If the order could not be created, "return no content".
-                return BadRequest(ProductResponse.ErrorMessage);
+                // If there are not enough product items available.
+                return StatusCode(500, "Not enough items in stock.");
             }
-
-            
         }
-        
+
+        private bool ProductItemsAvailable(Order order)
+        {
+            foreach (var orderLine in order.OrderLines)
+            {
+                // Call product service to get the product ordered.
+                var orderedProduct = productServiceGateway.Get(orderLine.ProductId);
+                if (orderLine.Quantity > orderedProduct.ItemsInStock - orderedProduct.ItemsReserved)
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
 
     }
 }
