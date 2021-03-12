@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using OrderApi.Data;
 using OrderApi.Models;
 using RestSharp;
+using SharedModels;
 
 namespace OrderApi.Controllers
 {
@@ -22,10 +23,17 @@ namespace OrderApi.Controllers
 
         // GET: orders
         [HttpGet]
-        public IEnumerable<Order> GetAllOrders()
+        public IActionResult GetAllOrders(int CustomerId, SharedModels.Order.OrderStatus orderstatus)
         {
-            return _repository.GetAll();
-         }
+            if(CustomerId == 0)
+            {
+                return new ObjectResult(_repository.GetAll());
+            }
+            else
+            {
+                return new ObjectResult(_repository.GetByCustomer(CustomerId));
+            }
+        }
 
 
         // GET orders/5
@@ -40,7 +48,6 @@ namespace OrderApi.Controllers
             return new ObjectResult(item);
         }
 
-        
 
         // POST orders
         [HttpPost]
@@ -64,8 +71,9 @@ namespace OrderApi.Controllers
             }
 
             //GET Credit standing from customer 
-            //localhost:5000/customer/1/VerifyVallet
-            // *** TODO Kim
+            //localhost:5000/orders/?CustomerNo=1
+            // *** TODO Kim **** 
+            
 
 
             // Ask Product service if products are available

@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using OrderApi.Models;
 using System;
+using SharedModels;
 
 namespace OrderApi.Data
 {
@@ -55,6 +56,16 @@ namespace OrderApi.Data
             var order = db.Orders.FirstOrDefault(p => p.Id == id);
             db.Orders.Remove(order);
             db.SaveChanges();
+        }
+
+        IEnumerable<Order> IRepository<Order>.GetByCustomer(int CustomerID)
+        {
+            List<Order> orderList = db.Orders.Where(o => o.CustomerId == CustomerID).ToList();
+            foreach (Order order in orderList)
+            {
+                order.Products = db.Products.Where(p => p.OrderId == order.Id).ToList();
+            }
+            return orderList;
         }
     }
 }
