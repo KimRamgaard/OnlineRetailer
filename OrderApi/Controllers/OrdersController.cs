@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json.Linq;
 using OrderApi.Data;
 using OrderApi.Models;
 using RestSharp;
@@ -55,10 +56,18 @@ namespace OrderApi.Controllers
 
             // Ask Customer service if Customer is valid
             // *** Pierre TODO *** 
-            c.BaseUrl = new Uri("customers/");
+            c.BaseUrl = new Uri("customers/" + order.CustomerId);
             var customerRequest = new RestRequest(order.CustomerId.ToString(), Method.GET);
             var customerResponse = c.Execute(customerRequest);
-            if (!customerResponse.IsSuccessful)
+            if (customerResponse.IsSuccessful)
+            {
+                var customer = JObject.Parse(customerResponse.Content);
+                if(customer is null)
+                {
+                    return StatusCode(404, "The entered customer doesn't seem to exist yet. Please select an existing/valid customer");
+                }
+            }
+            else
             {
                 return BadRequest(customerResponse.ErrorMessage);
             }
