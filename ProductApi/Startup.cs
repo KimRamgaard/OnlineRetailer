@@ -22,7 +22,7 @@ namespace ProductApi
 
         //Insert Rabbit MQ Connection String
         string cloudAMQPConnectionString =
-            "";
+            "host=hawk.rmq.cloudamqp.com;virtualHost=wdedqsoj;username=garlshud;password=FhoeSjzxqDyTDA0k-pOILAYddLWgL1h-";
 
         public Startup(IConfiguration configuration)
         {
