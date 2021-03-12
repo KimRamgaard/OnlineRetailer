@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
-using OrderApi.Models;
+using SharedModels;
 using System;
 
 namespace OrderApi.Data
@@ -31,23 +31,14 @@ namespace OrderApi.Data
             db.SaveChanges();
         }
 
-        Order IRepository<Order>.Get(int id)
+        public Order Get(int id)
         {
-            Order order = db.Orders.FirstOrDefault(o => o.Id == id);
-            if (order != null)
-                order.Products = db.Products.Where(p => p.OrderId == order.Id).ToList();
-
-            return order;
+            return db.Orders.Include(o => o.OrderLines).FirstOrDefault(o => o.Id == id);
         }
 
-        IEnumerable<Order> IRepository<Order>.GetAll()
+        public IEnumerable<Order> GetAll()
         {
-            List<Order> orderList = db.Orders.ToList();
-            foreach (Order order in orderList)
-            {
-                order.Products = db.Products.Where(p => p.OrderId == order.Id).ToList();
-            }
-            return orderList;
+            return db.Orders.ToList();
         }
 
         void IRepository<Order>.Remove(int id)
