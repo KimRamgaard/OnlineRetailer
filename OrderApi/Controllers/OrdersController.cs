@@ -51,21 +51,26 @@ namespace OrderApi.Controllers
                 return BadRequest();
             }
 
-            // Call ProductApi to get the product ordered
             RestClient c = new RestClient();
 
             // Ask Customer service if Customer is valid
-            c.BaseUrl = new Uri("http://localhost:5002/customers/");
+            // *** Pierre TODO *** 
+            c.BaseUrl = new Uri("customers/");
             var customerRequest = new RestRequest(order.CustomerId.ToString(), Method.GET);
             var customerResponse = c.Execute(customerRequest);
             if (!customerResponse.IsSuccessful)
             {
                 return BadRequest(customerResponse.ErrorMessage);
             }
-            
+
+            //GET Credit standing from customer 
+            //localhost:5000/customer/1/VerifyVallet
+            // *** TODO Kim
+
 
             // Ask Product service if products are available
-            c.BaseUrl = new Uri("http://localhost:5001/products");
+            // *** JAKOB TODO ***
+            c.BaseUrl = new Uri("products");
             var ProductRequest = new RestRequest(Method.PUT).AddJsonBody(order.Products);
             var ProductResponse = c.Execute(ProductRequest);
             if (ProductResponse.IsSuccessful)
