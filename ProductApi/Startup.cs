@@ -12,6 +12,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using ProductApi.Data;
+using ProductApi.Infrastructure;
 using SharedModels;
 
 namespace ProductApi
@@ -57,6 +58,10 @@ namespace ProductApi
                 var dbInitializer = services.GetService<IDbInitializer>();
                 dbInitializer.Initialize(dbContext);
             }
+
+            Task.Factory.StartNew(() =>
+                new MessageListener(app.ApplicationServices, cloudAMQPConnectionString).Start());
+
 
             if (env.IsDevelopment())
             {
