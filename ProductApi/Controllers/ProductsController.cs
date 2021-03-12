@@ -64,10 +64,10 @@ namespace ProductApi.Controllers
                 Product product = repository.Get(productOrder.Id);
                 if (product is null)
                 {
-                    return BadRequest();
+                    return BadRequest(); // Product does not exists
                 }
 
-                if(product.ItemsInStock < productOrder.ItemsReserved)
+                if(product.ItemsInStock <= productOrder.ItemsReserved)
                 {
                     return BadRequest(); //not enough items in stock
                 }
