@@ -13,11 +13,17 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using ProductApi.Data;
 using ProductApi.Models;
+using SharedModels;
 
 namespace ProductApi
 {
     public class Startup
     {
+
+        //Insert Rabbit MQ Connection String
+        string cloudAMQPConnectionString =
+            "";
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;

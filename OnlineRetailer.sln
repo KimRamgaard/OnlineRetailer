@@ -8,6 +8,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrderApi", "OrderApi\OrderA
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CustomerApi", "CustomerApi\CustomerApi.csproj", "{32044EFD-0408-45D7-9DE5-2A47481C117F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharedModels", "SharedModels\SharedModels.csproj", "{F9ABDD48-B050-4F3D-99AA-9124892490EB}"
 Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{D57CB353-E929-4C1A-B958-28657431053C}"
 EndProject
 Global
@@ -28,6 +29,10 @@ Global
 		{32044EFD-0408-45D7-9DE5-2A47481C117F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{32044EFD-0408-45D7-9DE5-2A47481C117F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{32044EFD-0408-45D7-9DE5-2A47481C117F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F9ABDD48-B050-4F3D-99AA-9124892490EB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F9ABDD48-B050-4F3D-99AA-9124892490EB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F9ABDD48-B050-4F3D-99AA-9124892490EB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F9ABDD48-B050-4F3D-99AA-9124892490EB}.Release|Any CPU.Build.0 = Release|Any CPU
 		{D57CB353-E929-4C1A-B958-28657431053C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{D57CB353-E929-4C1A-B958-28657431053C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D57CB353-E929-4C1A-B958-28657431053C}.Release|Any CPU.ActiveCfg = Release|Any CPU
