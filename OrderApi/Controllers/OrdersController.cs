@@ -19,8 +19,6 @@ namespace OrderApi.Controllers
         IServiceGateway<Product> productServiceGateway;
         IMessagePublisher messagePublisher;
 
-        //private readonly OrderApiContext _context;
-
         public OrdersController(IRepository<Order> repository,
             IServiceGateway<Product> gateway,
             IMessagePublisher publisher)
@@ -68,13 +66,13 @@ namespace OrderApi.Controllers
                 return BadRequest();
             }
 
-            RestClient c = new RestClient();
+            RestClient restClient = new RestClient();
 
             // Ask Customer service if Customer is valid
             // *** Pierre TODO *** 
-            c.BaseUrl = new Uri("customers/" + order.CustomerId);
+            restClient.BaseUrl = new Uri("customers/" + order.CustomerId);
             var customerRequest = new RestRequest(order.CustomerId.ToString(), Method.GET);
-            var customerResponse = c.Execute(customerRequest);
+            var customerResponse = restClient.Execute(customerRequest);
             if (customerResponse.IsSuccessful)
             {
                 var customer = JObject.Parse(customerResponse.Content);
@@ -91,53 +89,46 @@ namespace OrderApi.Controllers
 
             //GET Credit standing from customer 
             //localhost:5000/orders/?CustomerNo=1
-            c.BaseUrl = new Uri("orders/");
+            restClient.BaseUrl = new Uri("orders/");
             var orderRequest = new RestRequest("?CustomerNo=" + customerResponse.Content.ToString(), Method.GET);
-            var orderResponse = c.Execute(orderRequest);
+            var orderResponse = restClient.Execute(orderRequest);
 
-            Console.WriteLine(orderResponse.ToString());
+         
 
 
+
+            // Make a request for the products from the product API
+            restClient.BaseUrl = new Uri("Products/");
+            var productRequest = new RestRequest(Method.PUT);
+            productRequest.RequestFormat = DataFormat.Json;
+            productRequest.AddJsonBody(order.OrderLines);
+            var productResponse = restClient.Execute(productRequest);
+
+            if (!productResponse.IsSuccessful)
+            {
+                return BadRequest(productResponse.ErrorException);
+            }
+
+
+            //Create order 
+            try
+            {
+                // Publish OrderStatusChangedMessage. If this operation
+                // fails, the order will not be created
+                messagePublisher.PublishOrderStatusChangedMessage(
+                    order.CustomerId, order.OrderLines, "completed");
+
+                // Create order.
+                order.Status = Order.OrderStatus.completed;
+                var newOrder = _repository.Add(order);
+                return CreatedAtRoute("GetOrder", new { id = newOrder.Id }, newOrder);
+            }
+            catch
+            {
+                return StatusCode(500, "An error happened. Try again.");
+            }
             
-            // Ask Product service if products are available
-            if (ProductItemsAvailable(order))
-            {
-                try
-                {
-                    // Publish OrderStatusChangedMessage. If this operation
-                    // fails, the order will not be created
-                    messagePublisher.PublishOrderStatusChangedMessage(
-                        order.CustomerId, order.OrderLines, "completed");
-
-                    // Create order.
-                    order.Status = Order.OrderStatus.completed;
-                    var newOrder = _repository.Add(order);
-                    return CreatedAtRoute("GetOrder", new { id = newOrder.Id }, newOrder);
-                }
-                catch
-                {
-                    return StatusCode(500, "An error happened. Try again.");
-                }
-            }
-            else
-            {
-                // If there are not enough product items available.
-                return StatusCode(500, "Not enough items in stock.");
-            }
-        }
-
-        private bool ProductItemsAvailable(Order order)
-        {
-            foreach (var orderLine in order.OrderLines)
-            {
-                // Call product service to get the product ordered.
-                var orderedProduct = productServiceGateway.Get(orderLine.ProductId);
-                if (orderLine.Quantity > orderedProduct.ItemsInStock - orderedProduct.ItemsReserved)
-                {
-                    return false;
-                }
-            }
-            return true;
+            
         }
     }
 }

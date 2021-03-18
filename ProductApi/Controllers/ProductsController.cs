@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text.Json;
 using Microsoft.AspNetCore.Mvc;
 using ProductApi.Data;
+using ProductApi.Models;
 using SharedModels;
 
 namespace ProductApi.Controllers
@@ -51,29 +51,29 @@ namespace ProductApi.Controllers
             return CreatedAtRoute("GetProduct", new { id = newProduct.Id }, newProduct);
         }
 
-        // PUT products/5
+        // PUT products
         [HttpPut]
 
-        public IActionResult PutProduct(List<ProductOrder> productOrders)
+        public IActionResult PutProduct(List<OrderLine> orderLines)
         {
             List<Product> products = new List<Product>();
             
             //iterate through products and check if stock is present
-            foreach (ProductOrder productOrder in productOrders)
+            foreach (OrderLine orderLine in orderLines)
             {
-                Product product = repository.Get(productOrder.Id);
+                Product product = repository.Get(orderLine.ProductId);
                 if (product is null)
                 {
-                    return BadRequest(); // Product does not exists
+                    return BadRequest("The Product does not exist"); // Product does not exists
                 }
 
-                if(product.ItemsInStock <= productOrder.ItemsReserved)
+                if(product.ItemsInStock < orderLine.Quantity)
                 {
                     return BadRequest(); //not enough items in stock
                 }
                
                 //minus stock and save to apply later
-                product.ItemsInStock -= productOrder.ItemsReserved;
+                product.ItemsInStock -= orderLine.Quantity;
                 products.Add(product);
 
             }

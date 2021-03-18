@@ -1,6 +1,7 @@
 ﻿using EasyNetQ;
 using Microsoft.Extensions.DependencyInjection;
 using ProductApi.Data;
+using ProductApi.Models;
 using SharedModels;
 using System;
 using System.Threading;
@@ -57,7 +58,7 @@ namespace ProductApi.Infrastructure
                 // Beware that this operation is not idempotent.
                 foreach (var orderLine in message.OrderLines)
                 {
-                    var product = productRepos.Get(orderLine.ProductId);
+                    Product product = productRepos.Get(orderLine.ProductId);
                     product.ItemsReserved += orderLine.Quantity;
                     productRepos.Edit(product);
                 }
