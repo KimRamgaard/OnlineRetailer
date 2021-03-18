@@ -6,6 +6,7 @@ using OrderApi.Data;
 using SharedModels;
 using RestSharp;
 using OrderApi.Infrastructure;
+using System.Linq;
 
 
 namespace OrderApi.Controllers
@@ -67,40 +68,35 @@ namespace OrderApi.Controllers
 
             RestClient restClient = new RestClient();
 
-            // Ask Customer service if Customer is valid
-            // *** Pierre TODO *** 
-            restClient.BaseUrl = new Uri("customers/" + order.CustomerId);
+            // Ask Customer service if Customer is valid 
+            restClient.BaseUrl = new Uri("http://customerapi/customers/");
             var customerRequest = new RestRequest(order.CustomerId.ToString(), Method.GET);
             var customerResponse = restClient.Execute(customerRequest);
+            if (!customerResponse.IsSuccessful)
+            {
+                return BadRequest(customerResponse.ErrorMessage); 
+            }
+
             var customer = JObject.Parse(customerResponse.Content);
-            if (customerResponse.IsSuccessful)
+            if (customer is null)
             {
-                if(customer is null)
-                {
-                    return StatusCode(404, "The entered customer doesn't seem to exist yet. Please select an existing/valid customer");
-                }
-            }
-            else
-            {
-                return BadRequest(customerResponse.ErrorMessage);
+                return StatusCode(404, "The entered customer doesn't seem to exist yet. Please select an existing/valid customer");
             }
 
-
-            
-            //GET Credit standing from customer 
             //localhost:5000/orders/?CustomerNo=1
-            restClient.BaseUrl = new Uri("orders/");
-            var orderRequest = new RestRequest("?CustomerNo=" + customer.Value<String>("CustomerId") , Method.GET);
-            //List<Order> customerOrders = restClient.Execute<List<Order>>(orderRequest);
+            restClient.BaseUrl = new Uri("http://orderapi/orders/");
+            var orderRequest = new RestRequest("?CustomerNo=" + customer.GetValue("customerId") , Method.GET);
+            var orderResponse = restClient.Execute<List<Order>>(orderRequest);
+            List<Order> customerOrders = orderResponse.Data;
 
-
-            
-            
-            
-         
+            bool hasOutstandingCredit = customerOrders.Any(order => order.Status == Order.OrderStatus.shipped);
+            if (hasOutstandingCredit)
+            {
+                return BadRequest("Customer have credit standing");
+            }
 
             // Ask Product service if products are available
-            if (ProductItemsAvailable(order))
+                if (ProductItemsAvailable(order))
             {
                 try
                 {
