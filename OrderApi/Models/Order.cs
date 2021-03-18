@@ -10,12 +10,16 @@ namespace OrderApi.Models
 
         public int CustomerId { get; set; }
 
-        //Products
+        public OrderStatus Status { get; set; }
+
+        public enum OrderStatus
+        {
+            cancelled,
+            completed,
+            shipped,
+            paid
+        }
         public ICollection<ProductOrder> Products { get; set; }
-
-        
-
-
-
     }
+
 }

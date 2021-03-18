@@ -15,7 +15,7 @@ namespace OrderApi.Data
             db = context;
         }
 
-        Order IRepository<Order>.Add(Order entity)
+        Order IRepository<Models.Order>.Add(Order entity)
         {
             if (entity.Date == null)
                 entity.Date = DateTime.Now;
@@ -25,7 +25,7 @@ namespace OrderApi.Data
             return newOrder;
         }
 
-        void IRepository<Order>.Edit(Order entity)
+        void IRepository<Models.Order>.Edit(Models.Order entity)
         {
             db.Entry(entity).State = EntityState.Modified;
             db.SaveChanges();
@@ -41,11 +41,21 @@ namespace OrderApi.Data
             return db.Orders.ToList();
         }
 
-        void IRepository<Order>.Remove(int id)
+        void IRepository<Models.Order>.Remove(int id)
         {
             var order = db.Orders.FirstOrDefault(p => p.Id == id);
             db.Orders.Remove(order);
             db.SaveChanges();
+        }
+
+        IEnumerable<Models.Order> IRepository<Models.Order>.GetByCustomer(int CustomerID)
+        {
+            List<Models.Order> orderList = db.Orders.Where(o => o.CustomerId == CustomerID).ToList();
+            foreach (Models.Order order in orderList)
+            {
+                order.Products = db.Products.Where(p => p.OrderId == order.Id).ToList();
+            }
+            return orderList;
         }
     }
 }

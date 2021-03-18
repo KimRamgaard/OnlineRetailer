@@ -7,6 +7,7 @@ using SharedModels;
 using RestSharp;
 using OrderApi.Infrastructure;
 
+
 namespace OrderApi.Controllers
 {
     [ApiController]
@@ -30,10 +31,17 @@ namespace OrderApi.Controllers
 
         // GET: orders
         [HttpGet]
-        public IEnumerable<Order> GetAllOrders()
+        public IActionResult GetAllOrders(int CustomerId, Order.OrderStatus orderstatus)
         {
-            return _repository.GetAll();
-         }
+            if(CustomerId == 0)
+            {
+                return new ObjectResult(_repository.GetAll());
+            }
+            else
+            {
+                return new ObjectResult(_repository.GetByCustomer(CustomerId));
+            }
+        }
 
 
         // GET orders/5
@@ -48,12 +56,12 @@ namespace OrderApi.Controllers
             return new ObjectResult(item);
         }
 
-        
 
         // POST orders
         [HttpPost]
         public IActionResult Post([FromBody]Order order)
         {
+            
             if (order == null)
             {
                 return BadRequest();
@@ -79,11 +87,19 @@ namespace OrderApi.Controllers
                 return BadRequest(customerResponse.ErrorMessage);
             }
 
+            
+
+
             //GET Credit standing from customer 
-            //localhost:5000/customer/1/VerifyVallet
-            // *** TODO Kim
+            //localhost:5000/orders/?CustomerNo=1
+            c.BaseUrl = new Uri("orders/");
+            var orderRequest = new RestRequest("?CustomerNo=" + customerResponse.Content.ToString(), Method.GET);
+            var orderResponse = c.Execute(orderRequest);
+
+            Console.WriteLine(orderResponse.ToString());
 
 
+            
             // Ask Product service if products are available
             if (ProductItemsAvailable(order))
             {
@@ -111,18 +127,7 @@ namespace OrderApi.Controllers
             }
         }
 
-        private bool ProductItemsAvailable(Order order)
-        {
-            foreach (var orderLine in order.OrderLines)
-            {
-                // Call product service to get the product ordered.
-                var orderedProduct = productServiceGateway.Get(orderLine.ProductId);
-                if (orderLine.Quantity > orderedProduct.ItemsInStock - orderedProduct.ItemsReserved)
-                {
-                    return false;
-                }
-            }
-            return true;
+            
         }
 
 
