@@ -96,7 +96,7 @@ namespace OrderApi.Controllers
             }
 
             // Ask Product service if products are available
-                if (ProductItemsAvailable(order))
+            if (ProductItemsAvailable(order))
             {
                 try
                 {
