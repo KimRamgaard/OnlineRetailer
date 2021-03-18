@@ -59,6 +59,7 @@ namespace ProductApi.Infrastructure
                 foreach (var orderLine in message.OrderLines)
                 {
                     Product product = productRepos.Get(orderLine.ProductId);
+                    product.ItemsInStock -= orderLine.Quantity;
                     product.ItemsReserved += orderLine.Quantity;
                     productRepos.Edit(product);
                 }

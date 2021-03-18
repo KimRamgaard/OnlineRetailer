@@ -15,10 +15,8 @@ namespace OrderApi
     public class Startup
     {
 
-        Uri productServiceBaseUrl = new Uri("http://productapi/products/");
-
         string cloudAMQPConnectionString =
-            "host=hawk.rmq.cloudamqp.com;virtualHost=wdedqsoj;username=garlshud;password=FhoeSjzxqDyTDA0k-pOILAYddLWgL1h-";
+            "amqps://garlshud:FhoeSjzxqDyTDA0k-pOILAYddLWgL1h-@kangaroo.rmq.cloudamqp.com/garlshud";
 
         public Startup(IConfiguration configuration)
         {
@@ -38,10 +36,6 @@ namespace OrderApi
 
             // Register database initializer for dependency injection
             services.AddTransient<IDbInitializer, DbInitializer>();
-
-            // Register product service gateway for dependency injection
-            services.AddSingleton<IServiceGateway<Product>>(new
-                ProductServiceGateway(productServiceBaseUrl));
 
             // Register MessagePublisher (a messaging gateway) for dependency injection
             services.AddSingleton<IMessagePublisher>(new
