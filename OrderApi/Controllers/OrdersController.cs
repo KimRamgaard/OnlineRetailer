@@ -139,5 +139,73 @@ namespace OrderApi.Controllers
             }
             return true;
         }
+
+        // PUT orders/5/cancel
+        // This action method cancels an order and publishes an OrderStatusChangedMessage
+        // with topic set to "cancelled".
+        [HttpPut("{id}/cancel")]
+        public IActionResult Cancel(int id)
+        {
+
+            try
+            {
+                Order selectedOrder = _repository.Get(id);
+
+                if (selectedOrder != null)
+                {
+                    messagePublisher.PublishOrderStatusChangedMessage(selectedOrder.CustomerId, selectedOrder.OrderLines, "cancelled");
+
+                    selectedOrder.Status = Order.OrderStatus.cancelled;
+
+                    _repository.Edit(selectedOrder);
+
+                    return Ok("Order was cancelled");
+                }
+
+                else
+                {
+                    return NotFound("Error: Order could not be found");
+                }
+            }
+
+            catch (Exception ex)
+            {
+                return BadRequest(ex.InnerException != null ? ex.Message + ex.InnerException : ex.Message);
+            }
+        }
+
+        // PUT orders/5/ship
+        // This action method ships an order and publishes an OrderStatusChangedMessage.
+        // with topic set to "shipped".
+        [HttpPut("{id}/ship")]
+        public IActionResult Ship(int id)
+        {
+            try
+            {
+                Order selectedOrder = _repository.Get(id);
+
+                if (selectedOrder != null)
+                {
+                    messagePublisher.PublishOrderStatusChangedMessage(selectedOrder.CustomerId, selectedOrder.OrderLines, "shipped");
+
+                    selectedOrder.Status = Order.OrderStatus.shipped;
+
+                    _repository.Edit(selectedOrder);
+
+                    return Ok("Order was shipped");
+                }
+
+                else
+                {
+                    return NotFound("Error: Order could not be shipped");
+                }
+            }
+
+            catch (Exception ex)
+            {
+                return BadRequest(ex.InnerException != null ? ex.Message + ex.InnerException : ex.Message);
+            }
+        }
+
     }
 }
