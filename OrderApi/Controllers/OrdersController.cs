@@ -16,13 +16,16 @@ namespace OrderApi.Controllers
     public class OrdersController : ControllerBase
     {
         private readonly IRepository<Order> _repository;
+        IServiceGateway<Product> productServiceGateway;
         readonly IMessagePublisher messagePublisher;
 
         public OrdersController(IRepository<Order> repository,
-            IMessagePublisher publisher)
+            IMessagePublisher publisher,
+            IServiceGateway<Product> gateway)
         {
             _repository = repository;
             messagePublisher = publisher;
+            productServiceGateway = gateway;
         }
 
         // GET: orders
@@ -97,40 +100,45 @@ namespace OrderApi.Controllers
             
          
 
-
-
-            // Make a request for the products from the product API
-            restClient.BaseUrl = new Uri("Products/");
-            var productRequest = new RestRequest(Method.PUT);
-            productRequest.RequestFormat = DataFormat.Json;
-            productRequest.AddJsonBody(order.OrderLines);
-            var productResponse = restClient.Execute(productRequest);
-
-            if (!productResponse.IsSuccessful)
+            // Ask Product service if products are available
+            if (ProductItemsAvailable(order))
             {
-                return BadRequest(productResponse.ErrorException);
+                try
+                {
+                    // Publish OrderStatusChangedMessage. If this operation
+                    // fails, the order will not be created
+                    messagePublisher.PublishOrderStatusChangedMessage(
+                        order.CustomerId, order.OrderLines, "completed");
+
+                    // Create order.
+                    order.Status = Order.OrderStatus.completed;
+                    var newOrder = _repository.Add(order);
+                    return CreatedAtRoute("GetOrder", new { id = newOrder.Id }, newOrder);
+                }
+                catch
+                {
+                    return StatusCode(500, "An error happened. Try again.");
+                }
             }
-
-
-            //Create order 
-            try
+            else
             {
-                // Publish OrderStatusChangedMessage. If this operation
-                // fails, the order will not be created
-                messagePublisher.PublishOrderStatusChangedMessage(
-                    order.CustomerId, order.OrderLines, "completed");
+                // If there are not enough product items available.
+                return StatusCode(500, "Not enough items in stock.");
+            }
+        }
 
-                // Create order.
-                order.Status = Order.OrderStatus.completed;
-                var newOrder = _repository.Add(order);
-                return CreatedAtRoute("GetOrder", new { id = newOrder.Id }, newOrder);
-            }
-            catch
+        private bool ProductItemsAvailable(Order order)
+        {
+            foreach (var orderLine in order.OrderLines)
             {
-                return StatusCode(500, "An error happened. Try again.");
+                // Call product service to get the product ordered.
+                var orderedProduct = productServiceGateway.Get(orderLine.ProductId);
+                if (orderLine.Quantity > orderedProduct.ItemsInStock)
+                {
+                    return false;
+                }
             }
-            
-            
+            return true;
         }
     }
 }

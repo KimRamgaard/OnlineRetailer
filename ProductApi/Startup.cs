@@ -13,8 +13,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using ProductApi.Data;
 using ProductApi.Infrastructure;
-using SharedModels;
-
+using ProductApi.Models;
 namespace ProductApi
 {
     public class Startup
@@ -22,7 +21,7 @@ namespace ProductApi
 
         //Insert Rabbit MQ Connection String
         string cloudAMQPConnectionString =
-            "host=hawk.rmq.cloudamqp.com;virtualHost=wdedqsoj;username=garlshud;password=FhoeSjzxqDyTDA0k-pOILAYddLWgL1h-";
+            "amqps://garlshud:FhoeSjzxqDyTDA0k-pOILAYddLWgL1h-@kangaroo.rmq.cloudamqp.com/garlshud";
 
         public Startup(IConfiguration configuration)
         {

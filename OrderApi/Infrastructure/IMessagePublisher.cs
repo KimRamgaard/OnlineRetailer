@@ -8,6 +8,5 @@ namespace OrderApi.Infrastructure
     {
         void PublishOrderStatusChangedMessage(int? customerId, IEnumerable<OrderLine> orderLines, string topic);
 
-        bool IsInStock(Order order);
     }
 }
