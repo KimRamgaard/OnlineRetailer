@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
 using OrderApi.Data;
 using SharedModels;
-using OrderApi.Models;
 using RestSharp;
 using OrderApi.Infrastructure;
 
