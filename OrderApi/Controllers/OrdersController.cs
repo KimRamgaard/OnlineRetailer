@@ -84,12 +84,13 @@ namespace OrderApi.Controllers
             }
 
 
+            /*
             //GET Credit standing from customer 
             //localhost:5000/orders/?CustomerNo=1
             restClient.BaseUrl = new Uri("orders/");
             var orderRequest = new RestRequest("?CustomerNo=" + customerResponse.Content.ToString(), Method.GET);
             var orderResponse = restClient.Execute(orderRequest);
-
+            */
          
 
 
