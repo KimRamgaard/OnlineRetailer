@@ -11,6 +11,7 @@ COPY ["OrderApi/OrderApi.csproj", "OrderApi/"]
 RUN dotnet restore "OrderApi/OrderApi.csproj"
 COPY . .
 WORKDIR "/src/OrderApi"
+ARG Mode=Debug
 RUN dotnet build "OrderApi.csproj" -c Release -o /app/build
 
 FROM build AS publish

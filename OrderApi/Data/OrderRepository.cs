@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using OrderApi.Models;
 using System;
-using SharedModels;
 
 namespace OrderApi.Data
 {
@@ -16,7 +15,7 @@ namespace OrderApi.Data
             db = context;
         }
 
-        Order IRepository<Order>.Add(Order entity)
+        Order IRepository<Models.Order>.Add(Order entity)
         {
             if (entity.Date == null)
                 entity.Date = DateTime.Now;
@@ -26,42 +25,42 @@ namespace OrderApi.Data
             return newOrder;
         }
 
-        void IRepository<Order>.Edit(Order entity)
+        void IRepository<Models.Order>.Edit(Models.Order entity)
         {
             db.Entry(entity).State = EntityState.Modified;
             db.SaveChanges();
         }
 
-        Order IRepository<Order>.Get(int id)
+        Models.Order IRepository<Models.Order>.Get(int id)
         {
-            Order order = db.Orders.FirstOrDefault(o => o.Id == id);
+            Models.Order order = db.Orders.FirstOrDefault(o => o.Id == id);
             if (order != null)
                 order.Products = db.Products.Where(p => p.OrderId == order.Id).ToList();
 
             return order;
         }
 
-        IEnumerable<Order> IRepository<Order>.GetAll()
+        IEnumerable<Models.Order> IRepository<Models.Order>.GetAll()
         {
-            List<Order> orderList = db.Orders.ToList();
-            foreach (Order order in orderList)
+            List<Models.Order> orderList = db.Orders.ToList();
+            foreach (Models.Order order in orderList)
             {
                 order.Products = db.Products.Where(p => p.OrderId == order.Id).ToList();
             }
             return orderList;
         }
 
-        void IRepository<Order>.Remove(int id)
+        void IRepository<Models.Order>.Remove(int id)
         {
             var order = db.Orders.FirstOrDefault(p => p.Id == id);
             db.Orders.Remove(order);
             db.SaveChanges();
         }
 
-        IEnumerable<Order> IRepository<Order>.GetByCustomer(int CustomerID)
+        IEnumerable<Models.Order> IRepository<Models.Order>.GetByCustomer(int CustomerID)
         {
-            List<Order> orderList = db.Orders.Where(o => o.CustomerId == CustomerID).ToList();
-            foreach (Order order in orderList)
+            List<Models.Order> orderList = db.Orders.Where(o => o.CustomerId == CustomerID).ToList();
+            foreach (Models.Order order in orderList)
             {
                 order.Products = db.Products.Where(p => p.OrderId == order.Id).ToList();
             }

@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using OrderApi.Data;
 using OrderApi.Models;
 using RestSharp;
-using SharedModels;
+
 
 namespace OrderApi.Controllers
 {
@@ -23,7 +23,7 @@ namespace OrderApi.Controllers
 
         // GET: orders
         [HttpGet]
-        public IActionResult GetAllOrders(int CustomerId, SharedModels.Order.OrderStatus orderstatus)
+        public IActionResult GetAllOrders(int CustomerId, Order.OrderStatus orderstatus)
         {
             if(CustomerId == 0)
             {
@@ -53,6 +53,7 @@ namespace OrderApi.Controllers
         [HttpPost]
         public IActionResult Post([FromBody]Order order)
         {
+            
             if (order == null)
             {
                 return BadRequest();
@@ -70,12 +71,19 @@ namespace OrderApi.Controllers
                 return BadRequest(customerResponse.ErrorMessage);
             }
 
-            //GET Credit standing from customer 
-            //localhost:5000/orders/?CustomerNo=1
-            // *** TODO Kim **** 
             
 
 
+            //GET Credit standing from customer 
+            //localhost:5000/orders/?CustomerNo=1
+            c.BaseUrl = new Uri("orders/");
+            var orderRequest = new RestRequest("?CustomerNo=" + customerResponse.Content.ToString(), Method.GET);
+            var orderResponse = c.Execute(orderRequest);
+
+            Console.WriteLine(orderResponse.ToString());
+
+
+            
             // Ask Product service if products are available
             // *** JAKOB TODO ***
             c.BaseUrl = new Uri("products");
@@ -91,6 +99,8 @@ namespace OrderApi.Controllers
                 // If the order could not be created, "return no content".
                 return BadRequest(ProductResponse.ErrorMessage);
             }
+
+            
 
             
         }
