@@ -6,7 +6,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using OrderApi.Data;
 using OrderApi.Infrastructure;
-using OrderApi.Models;
 using SharedModels;
 using System;
 
@@ -14,6 +13,7 @@ namespace OrderApi
 {
     public class Startup
     {
+        Uri productServiceBaseUrl = new Uri("http://productapi/products/");
 
         string cloudAMQPConnectionString =
             "amqps://garlshud:FhoeSjzxqDyTDA0k-pOILAYddLWgL1h-@kangaroo.rmq.cloudamqp.com/garlshud";
@@ -36,6 +36,10 @@ namespace OrderApi
 
             // Register database initializer for dependency injection
             services.AddTransient<IDbInitializer, DbInitializer>();
+
+            // Register product service gateway for dependency injection
+            services.AddSingleton<IServiceGateway<Product>>(new
+                ProductServiceGateway(productServiceBaseUrl));
 
             // Register MessagePublisher (a messaging gateway) for dependency injection
             services.AddSingleton<IMessagePublisher>(new

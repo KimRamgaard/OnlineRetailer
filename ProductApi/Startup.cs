@@ -13,7 +13,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using ProductApi.Data;
 using ProductApi.Infrastructure;
-using ProductApi.Models;
+using SharedModels;
 namespace ProductApi
 {
     public class Startup

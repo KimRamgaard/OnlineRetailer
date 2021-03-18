@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using EasyNetQ;
-using OrderApi.Models;
 using SharedModels;
 
 namespace OrderApi.Infrastructure

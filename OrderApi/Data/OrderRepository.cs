@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System;
-using OrderApi.Models;
+using SharedModels;
 
 namespace OrderApi.Data
 {
@@ -21,6 +21,7 @@ namespace OrderApi.Data
                 entity.Date = DateTime.Now;
             
             var newOrder = db.Orders.Add(entity).Entity;
+            db.SaveChanges();
             return newOrder;
         }
 
