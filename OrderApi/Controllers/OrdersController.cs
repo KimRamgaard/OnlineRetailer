@@ -70,9 +70,9 @@ namespace OrderApi.Controllers
             restClient.BaseUrl = new Uri("customers/" + order.CustomerId);
             var customerRequest = new RestRequest(order.CustomerId.ToString(), Method.GET);
             var customerResponse = restClient.Execute(customerRequest);
+            var customer = JObject.Parse(customerResponse.Content);
             if (customerResponse.IsSuccessful)
             {
-                var customer = JObject.Parse(customerResponse.Content);
                 if(customer is null)
                 {
                     return StatusCode(404, "The entered customer doesn't seem to exist yet. Please select an existing/valid customer");
@@ -84,13 +84,17 @@ namespace OrderApi.Controllers
             }
 
 
-            /*
+            
             //GET Credit standing from customer 
             //localhost:5000/orders/?CustomerNo=1
             restClient.BaseUrl = new Uri("orders/");
-            var orderRequest = new RestRequest("?CustomerNo=" + customerResponse.Content.ToString(), Method.GET);
-            var orderResponse = restClient.Execute(orderRequest);
-            */
+            var orderRequest = new RestRequest("?CustomerNo=" + customer.Value<String>("CustomerId") , Method.GET);
+            List<Order> customerOrders = restClient.Execute<List<Order>>(orderRequest);
+
+
+            
+            
+            
          
 
 
