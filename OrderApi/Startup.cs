@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using OrderApi.Data;
 using OrderApi.Infrastructure;
+using OrderApi.Models;
 using SharedModels;
 using System;
 

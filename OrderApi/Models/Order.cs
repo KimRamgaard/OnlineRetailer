@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using SharedModels;
 
 namespace OrderApi.Models
 {
@@ -19,7 +20,7 @@ namespace OrderApi.Models
             shipped,
             paid
         }
-        public ICollection<ProductOrder> Products { get; set; }
+        public ICollection<OrderLine> OrderLines { get; set; }
     }
 
 }

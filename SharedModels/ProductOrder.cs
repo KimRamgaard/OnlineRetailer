@@ -12,8 +12,6 @@ namespace SharedModels
 
         public int OrderId { get; set; }
 
-        [JsonIgnore]
-        public Order Order { get; set; }
 
     }
 }

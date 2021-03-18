@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using EasyNetQ;
+using OrderApi.Models;
 using SharedModels;
 
 namespace OrderApi.Infrastructure
@@ -19,7 +20,7 @@ namespace OrderApi.Infrastructure
             bus.Dispose();
         }
 
-        public void PublishOrderStatusChangedMessage(int customerId, IEnumerable<Order.OrderLine> orderLines, string topic)
+        public void PublishOrderStatusChangedMessage(int? customerId, IEnumerable<OrderLine> orderLines, string topic)
         {
             var message = new OrderStatusChangedMessage
             {
@@ -30,9 +31,12 @@ namespace OrderApi.Infrastructure
             bus.PubSub.Publish(message, topic);
         }
 
+
         public bool IsInStock(Order order)
         {
             return false;
         }
+
+        
     }
 }

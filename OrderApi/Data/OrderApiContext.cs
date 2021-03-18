@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using OrderApi.Models;
 using SharedModels;
 
 namespace OrderApi.Data
@@ -8,6 +9,6 @@ namespace OrderApi.Data
         public OrderApiContext(DbContextOptions<OrderApiContext> options) : base(options)
         { }
         public DbSet<Order> Orders { get; set; }
-        public DbSet<ProductOrder> Products { get; set; }
+        public DbSet<OrderLine> Products { get; set; }
     }
 }

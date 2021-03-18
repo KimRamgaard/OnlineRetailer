@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
-using SharedModels;
 using System;
+using OrderApi.Models;
 
 namespace OrderApi.Data
 {
@@ -15,17 +15,16 @@ namespace OrderApi.Data
             db = context;
         }
 
-        Order IRepository<Models.Order>.Add(Order entity)
+        Order IRepository<Order>.Add(Order entity)
         {
             if (entity.Date == null)
                 entity.Date = DateTime.Now;
             
             var newOrder = db.Orders.Add(entity).Entity;
-            //db.SaveChanges();
             return newOrder;
         }
 
-        void IRepository<Models.Order>.Edit(Models.Order entity)
+        void IRepository<Order>.Edit(Order entity)
         {
             db.Entry(entity).State = EntityState.Modified;
             db.SaveChanges();
@@ -41,19 +40,19 @@ namespace OrderApi.Data
             return db.Orders.ToList();
         }
 
-        void IRepository<Models.Order>.Remove(int id)
+        void IRepository<Order>.Remove(int id)
         {
             var order = db.Orders.FirstOrDefault(p => p.Id == id);
             db.Orders.Remove(order);
             db.SaveChanges();
         }
 
-        IEnumerable<Models.Order> IRepository<Models.Order>.GetByCustomer(int CustomerID)
+        IEnumerable<Order> IRepository<Order>.GetByCustomer(int CustomerID)
         {
-            List<Models.Order> orderList = db.Orders.Where(o => o.CustomerId == CustomerID).ToList();
-            foreach (Models.Order order in orderList)
+            List<Order> orderList = db.Orders.Where(o => o.CustomerId == CustomerID).ToList();
+            foreach (Order order in orderList)
             {
-                order.Products = db.Products.Where(p => p.OrderId == order.Id).ToList();
+                order.OrderLines = db.Products.Where(p => p.OrderId == order.Id).ToList();
             }
             return orderList;
         }

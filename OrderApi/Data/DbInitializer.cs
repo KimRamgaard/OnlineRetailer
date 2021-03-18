@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using OrderApi.Models;
+using SharedModels;
 using System;
 
 namespace OrderApi.Data
@@ -24,10 +25,10 @@ namespace OrderApi.Data
                 Id = 1,
                 CustomerId = 1,
                 Date = DateTime.Today,
-                Products = new List<ProductOrder>
+                OrderLines = new List<OrderLine>
                 {
-                    new ProductOrder(){Id = 1, ItemsReserved = 2},
-                    new ProductOrder(){Id = 2, ItemsReserved = 3}
+                    new OrderLine(){ProductId = 1, Quantity = 2},
+                    new OrderLine(){ProductId = 2, Quantity = 3}
                 }
 
             };

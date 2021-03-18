@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
 using OrderApi.Data;
 using SharedModels;
+using OrderApi.Models;
 using RestSharp;
 using OrderApi.Infrastructure;
 
@@ -71,8 +72,8 @@ namespace OrderApi.Controllers
 
             // Ask Customer service if Customer is valid
             // *** Pierre TODO *** 
-            c.BaseUrl = new Uri("customers/" + order.customerId);
-            var customerRequest = new RestRequest(order.customerId.ToString(), Method.GET);
+            c.BaseUrl = new Uri("customers/" + order.CustomerId);
+            var customerRequest = new RestRequest(order.CustomerId.ToString(), Method.GET);
             var customerResponse = c.Execute(customerRequest);
             if (customerResponse.IsSuccessful)
             {
@@ -86,8 +87,6 @@ namespace OrderApi.Controllers
             {
                 return BadRequest(customerResponse.ErrorMessage);
             }
-
-            
 
 
             //GET Credit standing from customer 
@@ -108,7 +107,7 @@ namespace OrderApi.Controllers
                     // Publish OrderStatusChangedMessage. If this operation
                     // fails, the order will not be created
                     messagePublisher.PublishOrderStatusChangedMessage(
-                        order.customerId, order.OrderLines, "completed");
+                        order.CustomerId, order.OrderLines, "completed");
 
                     // Create order.
                     order.Status = Order.OrderStatus.completed;
