@@ -92,7 +92,7 @@ namespace OrderApi.Controllers
             //localhost:5000/orders/?CustomerNo=1
             restClient.BaseUrl = new Uri("orders/");
             var orderRequest = new RestRequest("?CustomerNo=" + customer.Value<String>("CustomerId") , Method.GET);
-            List<Order> customerOrders = restClient.Execute<List<Order>>(orderRequest);
+            //List<Order> customerOrders = restClient.Execute<List<Order>>(orderRequest);
 
 
             

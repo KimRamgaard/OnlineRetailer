@@ -3,8 +3,6 @@ using Microsoft.EntityFrameworkCore;
 
 namespace SharedModels
 {
-
-    [Keyless]
     public class OrderLine
     {  
         public int OrderId { get; set; }
